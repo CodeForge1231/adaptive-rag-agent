@@ -1,0 +1,12 @@
+app:
+  logging:
+    enabled: true
+    level: info
+    rich_tracebacks: true
+    show_time: false
+    show_level: true
+    show_path: true
+
+  traceback:
+    enabled: true
+    show_locals: false
