@@ -10,3 +10,20 @@ app:
   traceback:
     enabled: true
     show_locals: false
+
+  observability:
+    enabled: ${OBS_ENABLED}
+    service:
+      name: rag_app
+      environment: ${APP_ENV}
+    otel:
+      endpoint: ${OBS_ENDPOINT}
+      sample_rate: 1.0
+      trace_batch_delay: 1000
+      trace_batch_size: 512
+      trace_export_timeout: 5000
+      metrics_export_interval: 5000
+      logs_batch_delay: 1000
+    instrument_langchain:
+      enabled: true
+      capture_content: true
