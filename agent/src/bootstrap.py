@@ -10,7 +10,7 @@ from src.core.load_config import load_config
 from src.core.logging import setup_logging
 from src.core.observability import observability
 from src.core.traceback import setup_traceback
-
+from src.rag.embeddings.factory import EmbeddingFactory
 
 from .app_context import AppContext
 
@@ -43,8 +43,11 @@ async def bootstrap():
         ),
     )
 
+    # Core RAG components
+    embeddings = EmbeddingFactory.create(config["app"]["rag"]["embeddings"])
 
     # Final application context
     return AppContext(
         settings=config,
+        embeddings=embeddings,
     )

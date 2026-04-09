@@ -1,3 +1,18 @@
+providers:
+  embeddings:
+    embeddings_openai_base: &emb_openai
+      provider: openai
+      model: ${OPENAI_EMBEDDING_MODEL}
+
+    embeddings_ollama_base: &emb_ollama
+      provider: ollama
+      model: ${OLLAMA_EMBEDDING_MODEL}
+
+    huggingface: &emb_hf
+      provider: huggingface
+      model: ${HF_EMBEDDING_MODEL}
+      device: ${HF_DEVICE}
+
 app:
   logging:
     enabled: true
@@ -27,3 +42,7 @@ app:
     instrument_langchain:
       enabled: true
       capture_content: true
+
+  rag:
+    embeddings:
+      <<: ${EMBEDDING_PROVIDER}
