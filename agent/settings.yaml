@@ -1,3 +1,32 @@
+providers:
+  embeddings:
+    embeddings_openai_base: &emb_openai
+      provider: openai
+      model: ${OPENAI_EMBEDDING_MODEL}
+
+    embeddings_ollama_base: &emb_ollama
+      provider: ollama
+      model: ${OLLAMA_EMBEDDING_MODEL}
+
+    huggingface: &emb_hf
+      provider: huggingface
+      model: ${HF_EMBEDDING_MODEL}
+      device: ${HF_DEVICE}
+
+  llm:
+    .llm_openai_base: &llm_openai
+      provider: openai
+      temperature: 0
+      model: ${OPENAI_MODEL}
+
+    .llm_ollama_base: &llm_ollama
+      provider: ollama
+      host: ${OLLAMA_HOST}
+      port: ${OLLAMA_PORT}
+      ssl: ${OLLAMA_SSL}
+      temperature: 0
+      model: ${OLLAMA_MODEL}
+
 app:
   logging:
     enabled: true
@@ -27,3 +56,16 @@ app:
     instrument_langchain:
       enabled: true
       capture_content: true
+
+  rag:
+    embeddings:
+      <<: ${EMBEDDING_PROVIDER}
+
+    llm:
+      heavy:
+        <<: ${HEAVY_LLM_PROVIDER}
+        temperature: 0
+
+      fast:
+        <<: ${FAST_LLM_PROVIDER}
+        temperature: 0.7

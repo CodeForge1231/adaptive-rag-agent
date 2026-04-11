@@ -10,7 +10,8 @@ from src.core.load_config import load_config
 from src.core.logging import setup_logging
 from src.core.observability import observability
 from src.core.traceback import setup_traceback
-
+from src.rag.embeddings.factory import EmbeddingFactory
+from src.rag.llm.factory import LLMFactory
 
 from .app_context import AppContext
 
@@ -43,8 +44,16 @@ async def bootstrap():
         ),
     )
 
+    # Core RAG components
+    embeddings = EmbeddingFactory.create(config["app"]["rag"]["embeddings"])
+
+    # LLMs with different performance
+    llm_fast = LLMFactory.create(config["app"]["rag"]["llm"]["fast"])
+
+    llm_heavy = LLMFactory.create(config["app"]["rag"]["llm"]["heavy"])
 
     # Final application context
     return AppContext(
         settings=config,
+        embeddings=embeddings,
     )
