@@ -13,6 +13,20 @@ providers:
       model: ${HF_EMBEDDING_MODEL}
       device: ${HF_DEVICE}
 
+  llm:
+    .llm_openai_base: &llm_openai
+      provider: openai
+      temperature: 0
+      model: ${OPENAI_MODEL}
+
+    .llm_ollama_base: &llm_ollama
+      provider: ollama
+      host: ${OLLAMA_HOST}
+      port: ${OLLAMA_PORT}
+      ssl: ${OLLAMA_SSL}
+      temperature: 0
+      model: ${OLLAMA_MODEL}
+
 app:
   logging:
     enabled: true
@@ -46,3 +60,12 @@ app:
   rag:
     embeddings:
       <<: ${EMBEDDING_PROVIDER}
+
+    llm:
+      heavy:
+        <<: ${HEAVY_LLM_PROVIDER}
+        temperature: 0
+
+      fast:
+        <<: ${FAST_LLM_PROVIDER}
+        temperature: 0.7
