@@ -12,6 +12,7 @@ from src.core.observability import observability
 from src.core.traceback import setup_traceback
 from src.rag.embeddings.factory import EmbeddingFactory
 from src.rag.llm.factory import LLMFactory
+from src.rag.vectorstore.factory import VectorStoreFactory
 
 from .app_context import AppContext
 
@@ -46,7 +47,8 @@ async def bootstrap():
 
     # Core RAG components
     embeddings = EmbeddingFactory.create(config["app"]["rag"]["embeddings"])
-
+    vectorstore = VectorStoreFactory.create(config["app"]["rag"]["vectorstore"], embeddings)
+    
     # LLMs with different performance
     llm_fast = LLMFactory.create(config["app"]["rag"]["llm"]["fast"])
 
@@ -56,4 +58,5 @@ async def bootstrap():
     return AppContext(
         settings=config,
         embeddings=embeddings,
+        vectorstore=vectorstore,
     )
