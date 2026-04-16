@@ -39,6 +39,16 @@ providers:
       persist_path: ${PROJECT_ROOT}/data/chroma_db
       collection: ${VECTOR_COLLECTION}
 
+  retriever:
+    simple_base: &retriever_simple
+      provider: simple
+      top_k: 5
+
+    mmr_base: &retriever_mmr
+      provider: mmr
+      top_k: 5
+      fetch_k: 10
+
 app:
   logging:
     enabled: true
@@ -84,3 +94,6 @@ app:
 
     vectorstore:
       <<: ${VECTORSTORE_PROVIDER}
+
+    retriever:
+      <<: ${RETRIEVER_PROVIDER}

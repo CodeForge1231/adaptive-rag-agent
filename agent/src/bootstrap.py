@@ -13,6 +13,7 @@ from src.core.traceback import setup_traceback
 from src.rag.embeddings.factory import EmbeddingFactory
 from src.rag.llm.factory import LLMFactory
 from src.rag.vectorstore.factory import VectorStoreFactory
+from src.rag.retriever.factory import RetrieverFactory
 
 from .app_context import AppContext
 
@@ -48,7 +49,12 @@ async def bootstrap():
     # Core RAG components
     embeddings = EmbeddingFactory.create(config["app"]["rag"]["embeddings"])
     vectorstore = VectorStoreFactory.create(config["app"]["rag"]["vectorstore"], embeddings)
-    
+    retriever = RetrieverFactory.create(
+        raw_cfg=config["app"]["rag"]["retriever"],
+        vector_store=vectorstore,
+        vectorstore_provider=config["app"]["rag"]["vectorstore"]["provider"],
+    )
+
     # LLMs with different performance
     llm_fast = LLMFactory.create(config["app"]["rag"]["llm"]["fast"])
 
