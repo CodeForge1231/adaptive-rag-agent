@@ -14,18 +14,40 @@ providers:
       device: ${HF_DEVICE}
 
   llm:
-    .llm_openai_base: &llm_openai
+    llm_openai_base: &llm_openai
       provider: openai
       temperature: 0
       model: ${OPENAI_MODEL}
 
-    .llm_ollama_base: &llm_ollama
+    llm_ollama_base: &llm_ollama
       provider: ollama
       host: ${OLLAMA_HOST}
       port: ${OLLAMA_PORT}
       ssl: ${OLLAMA_SSL}
       temperature: 0
       model: ${OLLAMA_MODEL}
+
+  vectorstore:
+    chroma_server_base: &chroma_server
+      provider: "chroma"
+      host: ${CHROMA_HOST}
+      port: ${CHROMA_PORT}
+      ssl: ${CHROMA_SSL}
+      collection: ${VECTOR_COLLECTION}
+    chroma_local_base: &chroma_local
+      provider: "chroma"
+      persist_path: ${PROJECT_ROOT}/data/chroma_db
+      collection: ${VECTOR_COLLECTION}
+
+  retriever:
+    simple_base: &retriever_simple
+      provider: simple
+      top_k: 5
+
+    mmr_base: &retriever_mmr
+      provider: mmr
+      top_k: 5
+      fetch_k: 10
 
 app:
   logging:
@@ -69,3 +91,9 @@ app:
       fast:
         <<: ${FAST_LLM_PROVIDER}
         temperature: 0.7
+
+    vectorstore:
+      <<: ${VECTORSTORE_PROVIDER}
+
+    retriever:
+      <<: ${RETRIEVER_PROVIDER}
