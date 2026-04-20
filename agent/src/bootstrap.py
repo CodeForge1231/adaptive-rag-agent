@@ -14,6 +14,7 @@ from src.rag.embeddings.factory import EmbeddingFactory
 from src.rag.llm.factory import LLMFactory
 from src.rag.vectorstore.factory import VectorStoreFactory
 from src.rag.retriever.factory import RetrieverFactory
+from src.rag.persistence.factory import PersistenceFactory
 
 from .app_context import AppContext
 
@@ -60,9 +61,18 @@ async def bootstrap():
 
     llm_heavy = LLMFactory.create(config["app"]["rag"]["llm"]["heavy"])
 
+    # Persistence
+    persistence = await PersistenceFactory.create(config["app"]["rag"]["persistence"])
+    profile_repo = persistence.repositories["user_profiles"]
+    document_history_repo = persistence.repositories["document_history"]
+    
     # Final application context
     return AppContext(
         settings=config,
         embeddings=embeddings,
         vectorstore=vectorstore,
+        retriever=retriever,
+        persistence=persistence,
+        user_profiles=profile_repo,
+        document_history=document_history_repo,
     )
