@@ -49,6 +49,22 @@ providers:
       top_k: 5
       fetch_k: 10
 
+  persistence:
+    database:
+      sqlite_base: &sqlite_base
+        provider: "sqlite"
+        path: ${PROJECT_ROOT}/data
+        database: ${PERSISTENCE_DB_NAME}
+
+      postgresql_base: &postgresql_base
+        provider: "postgresql"
+        host: ${POSTGRES_HOST}
+        port: ${POSTGRES_PORT}
+        user: ${POSTGRES_USER}
+        password: ${POSTGRES_PASSWORD}
+        database: ${PERSISTENCE_DB_NAME}
+        ssl: ${POSTGRES_SSL}
+
 app:
   logging:
     enabled: true
@@ -97,3 +113,14 @@ app:
 
     retriever:
       <<: ${RETRIEVER_PROVIDER}
+
+    persistence:
+      database:
+        <<: ${PERSISTENCE_DB_PROVIDER}
+
+      encryption:
+        provider: fernet
+        key: ${ENCRYPTION_KEY}
+
+      documents:
+        history_size: 3

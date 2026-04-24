@@ -18,6 +18,11 @@ dependencies = [
   "langchain-ollama>=1.0.1",
   "langchain-community>=0.4.1",
   "langchain-chroma>=0.2.6",
+  "psycopg[binary]>=3.3.2",
+  "psycopg2-binary>=2.9.11",
+  "aiosqlite>=0.22.1",
+  "asyncpg>=0.31.0",
+  "cryptography>=46.0.3",
 ]
 
 [tool.ruff]
