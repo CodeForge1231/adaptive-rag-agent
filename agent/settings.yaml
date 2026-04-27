@@ -124,3 +124,7 @@ app:
 
       documents:
         history_size: 3
+
+    reranker:
+      provider: llm
+      top_k: 5
