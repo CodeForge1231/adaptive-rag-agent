@@ -23,6 +23,10 @@ dependencies = [
   "aiosqlite>=0.22.1",
   "asyncpg>=0.31.0",
   "cryptography>=46.0.3",
+  "langgraph>=1.0.5",
+  "beautifulsoup4>=4.14.3",
+  "bs4>=0.0.2",
+  "tqdm>=4.67.1",
 ]
 
 [tool.ruff]
