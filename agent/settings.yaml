@@ -96,6 +96,17 @@ app:
       capture_content: true
 
   rag:
+    memory:
+      small:
+        window_size: 9
+        human_only: true
+      medium:
+        window_size: 12
+        human_only: false
+      large:
+        window_size: 15
+        human_only: false
+
     embeddings:
       <<: ${EMBEDDING_PROVIDER}
 
@@ -128,3 +139,6 @@ app:
     reranker:
       provider: llm
       top_k: 5
+
+  orchestrator:
+    strategy: ${RAG_ORCHESTRATOR}
