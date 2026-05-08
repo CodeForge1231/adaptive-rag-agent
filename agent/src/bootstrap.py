@@ -12,9 +12,15 @@ from src.core.observability import observability
 from src.core.traceback import setup_traceback
 from src.rag.embeddings.factory import EmbeddingFactory
 from src.rag.llm.factory import LLMFactory
+from src.rag.nodes import RAGNodes
+from src.rag.orchestrators.base import OrchestratorRequirement
+from src.rag.orchestrators.factory import OrchestratorFactory
 from src.rag.vectorstore.factory import VectorStoreFactory
 from src.rag.retriever.factory import RetrieverFactory
 from src.rag.persistence.factory import PersistenceFactory
+from src.rag.reranker.factory import RerankerFactory
+from src.rag.chains_library import ChainLibrary
+
 
 from .app_context import AppContext
 
@@ -61,11 +67,49 @@ async def bootstrap():
 
     llm_heavy = LLMFactory.create(config["app"]["rag"]["llm"]["heavy"])
 
-    # Persistence
-    persistence = await PersistenceFactory.create(config["app"]["rag"]["persistence"])
-    profile_repo = persistence.repositories["user_profiles"]
-    document_history_repo = persistence.repositories["document_history"]
-    
+    # Library of reusable LLM chains
+    chains = ChainLibrary(fast_llm=llm_fast, heavy_llm=llm_heavy)
+
+    # Optional reranking layer for retrieved documents
+    reranker = RerankerFactory.create(config["app"]["rag"]["reranker"], chains)
+
+    # Orchestrator selection
+    orchestrator_strategy = config["app"]["rag"]["orchestrator"]["strategy"]
+    requirements = OrchestratorFactory.get_requirements(orchestrator_strategy)
+
+    # Persistence-related dependencies
+    profile_repo = None
+    document_history_repo = None
+    persistence = None
+
+    # Initialize persistence only if required by the orchestrator
+    if OrchestratorRequirement.PERSISTENCE in requirements:
+        persistence = await PersistenceFactory.create(config["app"]["rag"]["persistence"])
+
+        profile_repo = persistence.repositories["user_profiles"]
+        document_history_repo = persistence.repositories["document_history"]
+
+    # RAG execution nodes
+    nodes = RAGNodes(
+        config=config,
+        chains=chains,
+        retriever=retriever,
+        reranker=reranker,
+        profile_repo=profile_repo,
+        document_history_repo=document_history_repo,
+    )
+
+    # Build orchestrator based on selected strategy
+    orchestrator = OrchestratorFactory.create(
+        orchestrator_strategy,
+        nodes,
+    )
+
+    # Optional graph visualization export
+    graph_viz_cfg = config["app"]["output"]["graph_viz"]
+    if graph_viz_cfg.get("auto_save"):
+        orchestrator.save_visualization(graph_viz_cfg["file_path"])
+
     # Final application context
     return AppContext(
         settings=config,
@@ -75,4 +119,5 @@ async def bootstrap():
         persistence=persistence,
         user_profiles=profile_repo,
         document_history=document_history_repo,
+        orchestrator=orchestrator,
     )
