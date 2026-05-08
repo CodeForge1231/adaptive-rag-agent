@@ -4,6 +4,7 @@ from src.rag.persistence.base import PersistenceContext
 from src.rag.retriever.base import BaseRetriever
 from src.rag.embeddings.base import BaseEmbeddingModel
 from src.rag.vectorstore.base import BaseVectorStore
+from src.rag.orchestrators.base import BaseOrchestrator
 
 class AppContext:
     def __init__(
@@ -16,12 +17,14 @@ class AppContext:
         persistence: PersistenceContext,
         user_profiles: UserProfileRepository,
         document_history: DocumentHistoryRepository,
+        orchestrator: BaseOrchestrator,
     ):
         self.settings = settings
         self.embeddings = embeddings
         self.vectorstore = vectorstore
         self.retriever = retriever
         self.persistence = persistence
+        self.orchestrator = orchestrator
         self.user_profiles = user_profiles
         self.document_history = document_history
 

@@ -78,6 +78,11 @@ app:
     enabled: true
     show_locals: false
 
+  output:
+    graph_viz:
+      auto_save: true
+      file_path: ${PROJECT_ROOT}/logs/graph.png
+
   observability:
     enabled: ${OBS_ENABLED}
     service:
