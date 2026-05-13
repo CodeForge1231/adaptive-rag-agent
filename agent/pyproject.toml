@@ -82,4 +82,11 @@ dev = [
     "seaborn>=0.13.2",
     "plotly>=6.5.0",
     "mplcursors>=0.7",
+    "gradio>=6.1.0",
+    "ipywidgets>=8.1.8",
+    "nbformat>=5.10.4",
+    "nbstripout>=0.8.2",
+    "mkdocs-material>=9.7.1",
+    "mkdocstrings[python]>=1.0.0",
+    "pymysql>=1.1.2",
 ]
