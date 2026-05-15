@@ -82,6 +82,10 @@ app:
     graph_viz:
       auto_save: true
       file_path: ${PROJECT_ROOT}/logs/graph.png
+    log_files:
+      chat_bot_votes:
+        enabled: true
+        file_path: ${PROJECT_ROOT}/logs/chat_votes.jsonl
 
   observability:
     enabled: ${OBS_ENABLED}
@@ -144,6 +148,14 @@ app:
     reranker:
       provider: llm
       top_k: 5
+
+    evaluation:
+      test_file: ${PROJECT_ROOT}/data/tests.json
+
+      judge_llm:
+        <<: *llm_openai
+        model: gpt-4o-mini
+        temperature: 0.0
 
   orchestrator:
     strategy: ${RAG_ORCHESTRATOR}
