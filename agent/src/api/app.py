@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.api.routers import health
+from src.api.routers import chat, health, documents
 from src.bootstrap import bootstrap
 
 
@@ -47,6 +47,9 @@ def create_app() -> FastAPI:
     # Initialize the main FastAPI application
     app = FastAPI(title="RAG Orchestrator API", version="1.0.0", lifespan=lifespan)
 
+    # Register modular API routes
+    app.include_router(chat.router)
     app.include_router(health.router)
+    app.include_router(documents.router)
 
     return app

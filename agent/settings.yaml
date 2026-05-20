@@ -66,6 +66,8 @@ providers:
         ssl: ${POSTGRES_SSL}
 
 app:
+  api_token: ${API_TOKEN}
+
   logging:
     enabled: true
     level: info
