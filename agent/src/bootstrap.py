@@ -20,6 +20,7 @@ from src.rag.retriever.factory import RetrieverFactory
 from src.rag.persistence.factory import PersistenceFactory
 from src.rag.reranker.factory import RerankerFactory
 from src.rag.chains_library import ChainLibrary
+from src.evaluation.factory import EvaluatorFactory
 
 
 from .app_context import AppContext
@@ -73,6 +74,12 @@ async def bootstrap():
     # Optional reranking layer for retrieved documents
     reranker = RerankerFactory.create(config["app"]["rag"]["reranker"], chains)
 
+    # LLM used for evaluation / judging
+    judge_llm = LLMFactory.create(config["app"]["evaluation"]["judge_llm"])
+
+    evaluator = EvaluatorFactory.create(judge_llm, config)
+
+
     # Orchestrator selection
     orchestrator_strategy = config["app"]["rag"]["orchestrator"]["strategy"]
     requirements = OrchestratorFactory.get_requirements(orchestrator_strategy)
@@ -120,4 +127,5 @@ async def bootstrap():
         user_profiles=profile_repo,
         document_history=document_history_repo,
         orchestrator=orchestrator,
+        evaluator=evaluator,
     )

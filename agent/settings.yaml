@@ -66,6 +66,8 @@ providers:
         ssl: ${POSTGRES_SSL}
 
 app:
+  api_token: ${API_TOKEN}
+
   logging:
     enabled: true
     level: info
@@ -149,13 +151,13 @@ app:
       provider: llm
       top_k: 5
 
-    evaluation:
-      test_file: ${PROJECT_ROOT}/data/tests.json
+    orchestrator:
+      strategy: ${RAG_ORCHESTRATOR}
 
-      judge_llm:
-        <<: *llm_openai
-        model: gpt-4o-mini
-        temperature: 0.0
+  evaluation:
+    test_file: ${PROJECT_ROOT}/data/tests.json
 
-  orchestrator:
-    strategy: ${RAG_ORCHESTRATOR}
+    judge_llm:
+      <<: *llm_openai
+      model: gpt-4o-mini
+      temperature: 0.0
