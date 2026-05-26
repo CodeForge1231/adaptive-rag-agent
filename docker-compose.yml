@@ -1,0 +1,121 @@
+version: "3.9"
+
+services:
+  agent:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+    container_name: rag-agent
+    env_file:
+      - ./agent/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./agent:/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - rag-network
+
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: rag-ui
+    env_file:
+      - ./agent/.env
+    environment:
+      BASE_API_URL: http://agent:8000
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./ui:/app
+    restart: unless-stopped
+    depends_on:
+      agent:
+        condition: service_healthy
+    healthcheck:
+      test: 
+        [
+        "CMD",
+        "python",
+        "-c",
+        "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - rag-network
+
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: rag-chroma
+    profiles:
+      - chroma
+    ports:
+      - "8010:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    restart: unless-stopped
+    healthcheck:
+      test: 
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v2/heartbeat')"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+    networks:
+      - rag-network
+
+  postgres:
+    image: postgres:17
+    container_name: rag-postgres
+    profiles:
+      - postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${PERSISTENCE_DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER} -d ${PERSISTENCE_DB_NAME}"
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      - rag-network
+
+networks:
+  rag-network:
+
+volumes:
+  chroma_data:
+  postgres_data:
