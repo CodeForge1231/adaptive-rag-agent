@@ -1,0 +1,70 @@
+version: "3"
+
+tasks:
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  agent:
+    desc: Run agent
+    dir: agent
+    cmds:
+      - uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+
+  ui:
+    desc: Run Streamlit UI
+    dir: ui-streamlit
+    cmds:
+      - uv run streamlit run app.py --server.headless true
+
+  agent-lint:
+    desc: Lint agent
+    dir: agent
+    cmds:
+      - uv run ruff check .
+
+  agent-format:
+    desc: Format agent
+    dir: agent
+    cmds:
+      - uv run ruff format .
+      - uv run ruff check --fix .
+
+  agent-typecheck:
+    desc: Typecheck agent
+    dir: agent
+    cmds:
+      - uv run mypy .
+
+  ui-lint:
+    desc: Lint UI
+    dir: ui-streamlit
+    cmds:
+      - uv run ruff check .
+
+  ui-format:
+    desc: Format UI
+    dir: ui-streamlit
+    cmds:
+      - uv run ruff format .
+      - uv run ruff check --fix .
+
+  all:
+    desc: Run all checks
+    cmds:
+      - task: agent-format
+      - task: agent-lint
+      - task: agent-typecheck
+      - task: ui-format
+      - task: ui-lint
+
+  docker-up:
+    desc: Start docker compose
+    cmds:
+      - docker compose --profile chroma up #--profile postgres up
+
+  docker-down:
+    desc: Stop docker compose
+    cmds:
+      - docker compose down
